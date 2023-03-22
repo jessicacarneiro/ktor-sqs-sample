@@ -28,29 +28,29 @@ class SqsQueueService {
         }
     }
 
-    suspend fun deleteMessages(queueUrlVal: String): String {
+    suspend fun deleteMessages(queueName: String): String {
 
-        println("Delete Messages from $queueUrlVal")
+        println("Delete Messages from $queueName")
 
         val purgeRequest = PurgeQueueRequest {
-            queueUrl = queueUrlVal
+            queueUrl = generateQueueUrl(queueName)
         }
 
         SqsClient { region = awsRegion }.use { sqsClient ->
             sqsClient.purgeQueue(purgeRequest)
-            return "Messages are successfully deleted from $queueUrlVal"
+            return "Messages are successfully deleted from $queueName"
         }
     }
 
-    suspend fun deleteQueue(queueUrlVal: String): String {
+    suspend fun deleteQueue(queueName: String): String {
 
         val request = DeleteQueueRequest {
-            queueUrl = queueUrlVal
+            queueUrl = generateQueueUrl(queueName)
         }
 
         SqsClient { region = awsRegion }.use { sqsClient ->
             sqsClient.deleteQueue(request)
-            return "$queueUrlVal was deleted!"
+            return "$queueName was deleted!"
         }
     }
 

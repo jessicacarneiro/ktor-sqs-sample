@@ -31,5 +31,15 @@ fun Application.configureRouting() {
 
             call.respond(sqsQueueService.sendMessage(queueName?: System.getenv("DEFAULT_QUEUE_NAME"), request))
         }
+
+        delete("queues/{queue}") {
+            val queueName = call.parameters["queue"]
+            call.respond(sqsQueueService.deleteQueue(queueName!!))
+        }
+
+        delete("queues/{queue}/messages") {
+            val queueName = call.parameters["queue"]
+            call.respond(sqsQueueService.deleteMessages(queueName!!))
+        }
     }
 }
