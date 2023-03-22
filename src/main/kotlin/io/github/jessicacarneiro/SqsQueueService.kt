@@ -2,8 +2,12 @@ package io.github.jessicacarneiro
 
 import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.*
+import aws.sdk.kotlin.services.sqs.model.CreateQueueRequest
 
 class SqsQueueService {
+    private val awsRegion = System.getenv("AWS_REGION")
+    private val awsAccountId = System.getenv("AWS_ACCOUNT_ID")
+    private val queueBaseUrl = "https://sqs.$awsRegion.amazonaws.com"
     suspend fun createQueue(queueNameVal: String): String {
 
         println("Create Queue")
@@ -11,7 +15,7 @@ class SqsQueueService {
             queueName = queueNameVal
         }
 
-        SqsClient { region = "us-east-1" }.use { sqsClient ->
+        SqsClient { region = awsRegion }.use { sqsClient ->
             sqsClient.createQueue(createQueueRequest)
             println("Get queue url")
 
@@ -24,61 +28,82 @@ class SqsQueueService {
         }
     }
 
-    suspend fun deleteMessages(queueUrlVal: String) {
+    suspend fun deleteMessages(queueUrlVal: String): String {
+
         println("Delete Messages from $queueUrlVal")
 
         val purgeRequest = PurgeQueueRequest {
             queueUrl = queueUrlVal
         }
 
-        SqsClient { region = "us-east-1" }.use { sqsClient ->
+        SqsClient { region = awsRegion }.use { sqsClient ->
             sqsClient.purgeQueue(purgeRequest)
-            println("Messages are successfully deleted from $queueUrlVal")
+            return "Messages are successfully deleted from $queueUrlVal"
         }
     }
 
-    suspend fun deleteQueue(queueUrlVal: String) {
+    suspend fun deleteQueue(queueUrlVal: String): String {
 
         val request = DeleteQueueRequest {
             queueUrl = queueUrlVal
         }
 
-        SqsClient { region = "us-east-1" }.use { sqsClient ->
+        SqsClient { region = awsRegion }.use { sqsClient ->
             sqsClient.deleteQueue(request)
-            println("$queueUrlVal was deleted!")
+            return "$queueUrlVal was deleted!"
         }
     }
 
-    suspend fun listQueues() {
+    suspend fun listQueues(): QueuesResponse {
+
         println("\nList Queues")
 
-        val prefix = "que"
-        val listQueuesRequest = ListQueuesRequest {
-            queueNamePrefix = prefix
-        }
+        val queues = mutableListOf<String>()
 
-        SqsClient { region = "us-east-1" }.use { sqsClient ->
-            val response = sqsClient.listQueues(listQueuesRequest)
-            response.queueUrls?.forEach { url ->
-                println(url)
+        SqsClient { region = awsRegion }.use { sqsClient ->
+            val response = sqsClient.listQueues(ListQueuesRequest {})
+
+            val queueName = response.queueUrls?.forEach { url ->
+                queues.add(url)
             }
         }
+
+        return QueuesResponse(queues.toList())
     }
 
-    suspend fun receiveMessages(queueUrlVal: String?) {
+    suspend fun receiveMessages(queueName: String): QueueMessagesResponse {
 
-        println("Retrieving messages from $queueUrlVal")
+        println("Retrieving messages from $queueName")
 
         val receiveMessageRequest = ReceiveMessageRequest {
-            queueUrl = queueUrlVal
+            queueUrl = generateQueueUrl(queueName)
             maxNumberOfMessages = 5
         }
 
-        SqsClient { region = "us-east-1" }.use { sqsClient ->
+        val messages = mutableListOf<QueueMessage>()
+
+        SqsClient { region = awsRegion }.use { sqsClient ->
             val response = sqsClient.receiveMessage(receiveMessageRequest)
             response.messages?.forEach { message ->
-                println(message.body)
+                messages.add(QueueMessage(message.body))
             }
         }
+
+        return QueueMessagesResponse(messages.toList())
     }
+
+    suspend fun sendMessage(queueName: String, message: MessageRequest): String {
+        println("Sending a message")
+        val messageRequest = SendMessageRequest {
+            queueUrl = generateQueueUrl(queueName)
+            messageBody = message.body
+        }
+
+        SqsClient { region = awsRegion }.use { sqsClient ->
+            sqsClient.sendMessage(messageRequest)
+            return "Message was successfully sent."
+        }
+    }
+
+    private fun generateQueueUrl(queueName: String) = "$queueBaseUrl/$awsAccountId/$queueName"
 }
