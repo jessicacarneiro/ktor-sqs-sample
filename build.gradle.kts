@@ -17,11 +17,15 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+val logbackVersion: String by project
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation("io.ktor:ktor-client-logging-jvm:2.2.1")
+    implementation("ch.qos.logback:logback-classic:1.4.6")
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-swagger:$ktor_version")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
