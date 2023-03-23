@@ -4,10 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class QueueMessagesResponse(
-    val messages: List<QueueMessage>? = emptyList(),
+    val messages: List<QueueMessage> = emptyList(),
 )
 
 @Serializable
 data class QueueMessage(
+    val id: String?,
     val body: String?,
 )

@@ -81,7 +81,12 @@ class SqsQueueService {
         SqsClient { region = awsRegion }.use { sqsClient ->
             val response = sqsClient.receiveMessage(receiveMessageRequest)
 
-            return QueueMessagesResponse(response.messages?.map { message -> QueueMessage(message.body) })
+            return QueueMessagesResponse(response.messages?.map { message ->
+                QueueMessage(
+                    message.messageId,
+                    message.body,
+                )
+            } ?: emptyList())
         }
     }
 
