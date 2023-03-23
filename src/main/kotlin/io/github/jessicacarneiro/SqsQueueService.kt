@@ -2,7 +2,7 @@ package io.github.jessicacarneiro
 
 import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.*
-import aws.sdk.kotlin.services.sqs.model.CreateQueueRequest
+import java.util.*
 
 class SqsQueueService {
     private val awsRegion = System.getenv("AWS_REGION")
@@ -102,6 +102,27 @@ class SqsQueueService {
         SqsClient { region = awsRegion }.use { sqsClient ->
             sqsClient.sendMessage(messageRequest)
             return "Message was successfully sent."
+        }
+    }
+
+    suspend fun sendBatchMessages(queueName: String, messages: List<Message>): String {
+        println("Sending multiple messages")
+
+        val messagesToSend = messages.map { message ->
+            SendMessageBatchRequestEntry {
+                id = message.id
+                messageBody = message.body
+            }
+        }
+
+        val sendMessageBatchRequest = SendMessageBatchRequest {
+            queueUrl = generateQueueUrl(queueName)
+            entries = messagesToSend
+        }
+
+        SqsClient { region = awsRegion }.use { sqsClient ->
+            sqsClient.sendMessageBatch(sendMessageBatchRequest)
+            return "Batch message were successfully sent."
         }
     }
 

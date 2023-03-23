@@ -2,6 +2,7 @@ package io.github.jessicacarneiro.plugins
 
 import io.github.jessicacarneiro.CreateQueueRequest
 import io.github.jessicacarneiro.MessageRequest
+import io.github.jessicacarneiro.SendMessagesBatchRequest
 import io.github.jessicacarneiro.SqsQueueService
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -29,7 +30,19 @@ fun Application.configureRouting() {
             val queueName = call.parameters["queue"]
             val request = call.receive<MessageRequest>()
 
-            call.respond(sqsQueueService.sendMessage(queueName?: System.getenv("DEFAULT_QUEUE_NAME"), request))
+            call.respond(sqsQueueService.sendMessage(queueName ?: System.getenv("DEFAULT_QUEUE_NAME"), request))
+        }
+
+        post("queues/{queue}/messages/batch") {
+            val queueName = call.parameters["queue"]
+            val request = call.receive<SendMessagesBatchRequest>()
+
+            call.respond(
+                sqsQueueService.sendBatchMessages(
+                    queueName ?: System.getenv("DEFAULT_QUEUE_NAME"),
+                    request.messages
+                )
+            )
         }
 
         delete("queues/{queue}") {
