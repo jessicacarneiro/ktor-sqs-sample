@@ -78,16 +78,11 @@ class SqsQueueService {
             maxNumberOfMessages = 5
         }
 
-        val messages = mutableListOf<QueueMessage>()
-
         SqsClient { region = awsRegion }.use { sqsClient ->
             val response = sqsClient.receiveMessage(receiveMessageRequest)
-            response.messages?.forEach { message ->
-                messages.add(QueueMessage(message.body))
-            }
-        }
 
-        return QueueMessagesResponse(messages.toList())
+            return QueueMessagesResponse(response.messages?.map { message -> QueueMessage(message.body) })
+        }
     }
 
     suspend fun sendMessage(queueName: String, message: Message): String {
