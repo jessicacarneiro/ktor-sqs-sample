@@ -1,8 +1,12 @@
-package io.github.jessicacarneiro
+package io.github.jessicacarneiro.service
 
 import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.*
-import java.util.*
+import io.github.jessicacarneiro.response.QueueMessage
+import io.github.jessicacarneiro.response.QueueMessagesResponse
+import io.github.jessicacarneiro.response.QueuesResponse
+import io.github.jessicacarneiro.models.BatchMessage
+import io.github.jessicacarneiro.models.Message
 
 class SqsQueueService {
     private val awsRegion = System.getenv("AWS_REGION")
@@ -92,7 +96,7 @@ class SqsQueueService {
         return QueueMessagesResponse(messages.toList())
     }
 
-    suspend fun sendMessage(queueName: String, message: MessageRequest): String {
+    suspend fun sendMessage(queueName: String, message: Message): String {
         println("Sending a message")
         val messageRequest = SendMessageRequest {
             queueUrl = generateQueueUrl(queueName)
@@ -105,7 +109,7 @@ class SqsQueueService {
         }
     }
 
-    suspend fun sendBatchMessages(queueName: String, messages: List<Message>): String {
+    suspend fun sendBatchMessages(queueName: String, messages: List<BatchMessage>): String {
         println("Sending multiple messages")
 
         val messagesToSend = messages.map { message ->

@@ -1,4 +1,4 @@
-package io.github.jessicacarneiro
+package io.github.jessicacarneiro.response
 
 import kotlinx.serialization.Serializable
 
