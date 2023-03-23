@@ -2,11 +2,11 @@ package io.github.jessicacarneiro.service
 
 import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.*
+import io.github.jessicacarneiro.models.BatchMessage
+import io.github.jessicacarneiro.models.Message
 import io.github.jessicacarneiro.response.QueueMessage
 import io.github.jessicacarneiro.response.QueueMessagesResponse
 import io.github.jessicacarneiro.response.QueuesResponse
-import io.github.jessicacarneiro.models.BatchMessage
-import io.github.jessicacarneiro.models.Message
 
 class SqsQueueService {
     private val awsRegion = System.getenv("AWS_REGION")
@@ -62,17 +62,11 @@ class SqsQueueService {
 
         println("\nList Queues")
 
-        val queues = mutableListOf<String>()
-
         SqsClient { region = awsRegion }.use { sqsClient ->
             val response = sqsClient.listQueues(ListQueuesRequest {})
 
-            val queueName = response.queueUrls?.forEach { url ->
-                queues.add(url)
-            }
+            return QueuesResponse(response.queueUrls)
         }
-
-        return QueuesResponse(queues.toList())
     }
 
     suspend fun receiveMessages(queueName: String): QueueMessagesResponse {
