@@ -12,6 +12,7 @@ class SqsQueueService {
     private val awsRegion = System.getenv("AWS_REGION")
     private val awsAccountId = System.getenv("AWS_ACCOUNT_ID")
     private val queueBaseUrl = "https://sqs.$awsRegion.amazonaws.com"
+
     suspend fun createQueue(queueNameVal: String): String {
 
         println("Create Queue")
@@ -91,7 +92,9 @@ class SqsQueueService {
     }
 
     suspend fun sendMessage(queueName: String, message: Message): String {
+
         println("Sending a message")
+
         val messageRequest = SendMessageRequest {
             queueUrl = generateQueueUrl(queueName)
             messageBody = message.body
@@ -104,6 +107,7 @@ class SqsQueueService {
     }
 
     suspend fun sendBatchMessages(queueName: String, messages: List<BatchMessage>): String {
+
         println("Sending multiple messages")
 
         val messagesToSend = messages.map { message ->
