@@ -1,0 +1,211 @@
+{
+	"info": {
+		"_postman_id": "47c52ca7-6d51-4afc-bbd0-04fc4ad78605",
+		"name": "SQS sample",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25204409"
+	},
+	"item": [
+		{
+			"name": "Get all queues",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/queues",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"queues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create queue",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"queueName\": \"queueName\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/queues",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"queues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete queue",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"queueName\": \"queueKtorSample\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/queues/queueName",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"queues",
+						"queueName"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Receive messages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/queues/queueName/messages",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"queues",
+						"queueName",
+						"messages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"message\": {\n  \"body\": \"This is a new message\"\n }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/queues/queueName/messages",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"queues",
+						"queueName",
+						"messages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send message in batch",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"messages\": [\n  {\n   \"body\": \"This is a super new message\"\n  },\n  {\n   \"body\": \"This is a second super new message\"\n  }\n ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/queues/queueName/messages/batch",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"queues",
+						"queueName",
+						"messages",
+						"batch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete messages",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"queueName\": \"queueKtorSample\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/queues/queueName/messages",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"queues",
+						"queueName",
+						"messages"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
